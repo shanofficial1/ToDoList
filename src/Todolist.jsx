@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FiPlus, FiTrash, FiCheckSquare, FiX, FiTrash2 } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FaFire } from "react-icons/fa";
 
 /**
@@ -10,45 +10,7 @@ import { FaFire } from "react-icons/fa";
  * - When user permanently deletes from Deleted Tasks, item is removed from localStorage.
  */
 
-/* ----------------- Notification component (simple) ----------------- */
-const NOTIFICATION_TTL = 4500;
-const SlideInNotifications = ({ notifications, removeNotif }) => {
-  const colorForType = {
-    backlog: "bg-neutral-700 text-neutral-100",
-    todo: "bg-yellow-500 text-neutral-900",
-    doing: "bg-sky-500 text-neutral-900",
-    done: "bg-emerald-500 text-neutral-900",
-    delete: "bg-red-600 text-white",
-    default: "bg-indigo-500 text-white",
-  };
-
-  return (
-    <div className="flex flex-col gap-2 w-80 sm:w-72 fixed top-3 right-3 z-50 pointer-events-none">
-      <AnimatePresence>
-        {notifications.map((n) => {
-          const cls = colorForType[n.type] || colorForType.default;
-          return (
-            <motion.div
-              key={n.id}
-              layout
-              initial={{ y: -10, opacity: 0, scale: 0.98 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ x: 120, opacity: 0 }}
-              transition={{ duration: 0.28, ease: "easeOut" }}
-              className={`p-2 flex items-start gap-2 text-xs font-medium shadow-lg rounded pointer-events-auto ${cls}`}
-            >
-              <FiCheckSquare className="mt-0.5" />
-              <span className="flex-1">{n.text}</span>
-              <button onClick={() => removeNotif(n.id)} className="ml-2 mt-0.5">
-                <FiX />
-              </button>
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    </div>
-  );
-};
+/* Notifications disabled: keeping a no-op addNotification for compatibility */
 
 /* ----------------- Main ToDoList ----------------- */
 export const ToDoList = () => {
@@ -81,7 +43,8 @@ const Board = () => {
     }
   });
 
-  const [notifications, setNotifications] = useState([]);
+  // notifications removed: use a no-op to keep existing call sites safe
+  const addNotification = () => {};
 
   // persist cards
   useEffect(() => {
@@ -97,15 +60,7 @@ const Board = () => {
     } catch {}
   }, [deleted]);
 
-  // notification helpers
-  const addNotification = (text, type = "default") => {
-    const id = Math.random().toString(36).slice(2, 9);
-    setNotifications((pv) => [{ id, text, type }, ...pv]);
-    setTimeout(() => {
-      setNotifications((pv) => pv.filter((n) => n.id !== id));
-    }, NOTIFICATION_TTL);
-  };
-  const removeNotif = (id) => setNotifications((pv) => pv.filter((n) => n.id !== id));
+  // (original notification logic removed)
 
   // update single card
   const updateCard = (id, patch) => {
@@ -194,7 +149,8 @@ const Board = () => {
           />
         </div>
 
-        {/* Deleted tasks section under the board */}
+        {/* Deleted tasks section removed/commented out */}
+        {/*
         <DeletedTasks
           deleted={deleted}
           setDeleted={setDeleted}
@@ -207,9 +163,10 @@ const Board = () => {
             addNotification("Cleared deleted history", "delete");
           }}
         />
+        */}
       </div>
 
-      <SlideInNotifications notifications={notifications} removeNotif={removeNotif} />
+      {/* Notifications disabled */}
     </div>
   );
 };
@@ -463,7 +420,8 @@ const AddCard = ({ column, setCards, addNotification }) => {
   );
 };
 
-/* ----------------- DeletedTasks UI ----------------- */
+/* ----------------- DeletedTasks UI (commented out, placeholder below) ----------------- */
+/*
 const DeletedTasks = ({ deleted, setDeleted, permanentlyRemove, clearAll }) => {
   return (
     <section className="w-full max-w-6xl mx-auto mt-6 px-4">
@@ -508,6 +466,10 @@ const DeletedTasks = ({ deleted, setDeleted, permanentlyRemove, clearAll }) => {
     </section>
   );
 };
+*/
+
+// Placeholder so references remain valid while the UI is hidden.
+const DeletedTasks = () => null;
 
 /* ----------------- Defaults ----------------- */
 const DEFAULT_CARDS = [];
